@@ -276,7 +276,9 @@ sh_binary(
                "//conditions:default": [
                    ":simple_console",
                ],
-           }) + if_mkl_ml(["//third_party/mkl:intel_binary_blob"]),
+           }) +
+           # XXX: always link to MKL binary blob
+           [ "//third_party/mkl:intel_binary_blob"],
 )
 
 # A genrule for generating a marker file for the pip package on Windows

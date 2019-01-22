@@ -788,11 +788,10 @@ def tf_additional_binary_deps():
         # core).
         "//tensorflow/core/kernels:lookup_util",
         "//tensorflow/core/util/tensor_bundle",
-    ] + if_mkl_ml(
-        [
-            "//third_party/mkl:intel_binary_blob",
-        ],
-    )
+    ] + [
+        # XXX: always link to MKL binary blob
+        "//third_party/mkl:intel_binary_blob",
+        ]
 
 def tf_additional_numa_deps():
     return select({

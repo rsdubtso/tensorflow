@@ -452,11 +452,10 @@ package_group(
 
 filegroup(
     name = "intel_binary_blob",
-    data = if_mkl_ml(
-        [
-            "//third_party/mkl:intel_binary_blob",
-        ],
-    ),
+    # XXX: always link to MKL binary blob
+    data = [
+        "//third_party/mkl:intel_binary_blob",
+    ],
 )
 
 cc_library(

@@ -598,11 +598,9 @@ def tf_cc_binary(
             name = name_os,
             copts = copts,
             srcs = srcs + tf_binary_additional_srcs(),
-            deps = deps + tf_binary_dynamic_kernel_deps(kernels) + if_mkl_ml(
-                [
-                    clean_dep("//third_party/mkl:intel_binary_blob"),
-                ],
-            ),
+            deps = deps + tf_binary_dynamic_kernel_deps(kernels) +
+                # XXX: always link to MKL binary blob
+                [clean_dep("//third_party/mkl:intel_binary_blob")],
             data = depset(data + added_data_deps),
             linkopts = linkopts + _rpath_linkopts(name_os),
             visibility = visibility,
@@ -971,11 +969,9 @@ def tf_cc_test(
                 "-lm",
             ],
         }) + linkopts + _rpath_linkopts(name),
-        deps = deps + tf_binary_dynamic_kernel_deps(kernels) + if_mkl_ml(
-            [
-                clean_dep("//third_party/mkl:intel_binary_blob"),
-            ],
-        ),
+        deps = deps + tf_binary_dynamic_kernel_deps(kernels) +
+            # XXX: always link to MKL binary blob
+            [clean_dep("//third_party/mkl:intel_binary_blob")],
         data = data +
                tf_binary_dynamic_kernel_dsos() +
                tf_binary_additional_srcs(),
