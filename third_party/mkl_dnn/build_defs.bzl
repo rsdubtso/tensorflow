@@ -1,3 +1,6 @@
+def clean_dep(dep):
+    return str(Label(dep))
+
 def if_mkl_open_source_only(if_true, if_false = []):
     """Returns `if_true` if MKL-DNN v0.x is used.
 
@@ -10,7 +13,13 @@ def if_mkl_open_source_only(if_true, if_false = []):
 
     """
     return select({
-        str(Label("//third_party/mkl_dnn:build_with_mkl_dnn_only")): if_true,
+        clean_dep("//third_party/mkl_dnn:build_with_mkl_dnn_only"): if_true,
+        "//conditions:default": if_false,
+    })
+
+def if_mkl_dnn_uses_tf_threading(if_true, if_false = []):
+    return select({
+        clean_dep("//third_party/mkl_dnn:mkl_dnn_use_tf_threading"): if_true,
         "//conditions:default": if_false,
     })
 

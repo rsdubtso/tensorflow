@@ -45,6 +45,7 @@ load(
     "//third_party/mkl_dnn:build_defs.bzl",
     "if_mkl_open_source_only",
     "if_mkl_v1_open_source_only",
+    "if_mkl_dnn_uses_tf_threading",
 )
 load(
     "//third_party/ngraph:build_defs.bzl",
@@ -296,6 +297,7 @@ def tf_copts(android_optimization_level_override = "-O2", is_external = False):
         if_enable_mkl(["-DENABLE_MKL"]) +
         if_ngraph(["-DINTEL_NGRAPH=1"]) +
         if_mkl_lnx_x64(["-fopenmp"]) +
+        if_mkl_dnn_uses_tf_threading(["-fno-openmp -DMKLDNN_TF_THREADING"]) +
         if_android_arm(["-mfpu=neon"]) +
         if_linux_x86_64(["-msse3"]) +
         if_ios_x86_64(["-msse4.1"]) +

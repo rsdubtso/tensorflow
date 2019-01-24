@@ -30,6 +30,10 @@ limitations under the License.
 #include "tensorflow/core/public/session_options.h"
 #include "tensorflow/core/util/env_var.h"
 
+#if defined(MKLDNN_TF_THREADING)
+#include "mkldnn.h"
+#endif
+
 namespace tensorflow {
 namespace {
 
@@ -155,6 +159,9 @@ LocalDevice::LocalDevice(const SessionOptions& options,
     tp_info = owned_tp_info_.get();
   }
   set_tensorflow_cpu_worker_threads(&tp_info->eigen_worker_threads_);
+#if defined(MKLDNN_TF_THREADING)
+  mkldnn_set_tensorflow_thread_pool(tp_info->eigen_worker_threads_.workers);
+#endif
   set_eigen_cpu_device(tp_info->eigen_device_.get());
 }
 

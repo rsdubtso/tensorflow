@@ -4,6 +4,7 @@ load(
     "@org_tensorflow//third_party/mkl_dnn:build_defs.bzl",
     "if_mkl_open_source_only",
     "if_mkl_v1_open_source_only",
+    "if_mkl_dnn_uses_tf_threading",
 )
 load(
     "@org_tensorflow//third_party:common.bzl",
@@ -51,19 +52,35 @@ template_rule(
 )
 
 cc_library(
+	name = "mkl_dnn_mkl_deps",
+	deps = select({
+		"@org_tensorflow//tensorflow:linux_x86_64": [
+			"@mkl_linux//:mkl_headers",
+			"@mkl_linux//:mkl_libs_linux",
+		],
+		"@org_tensorflow//tensorflow:macos": [
+			"@mkl_macos//:mkl_headers",
+			"@mkl_macos//:mkl_libs_macos",
+		],
+		"@org_tensorflow//tensorflow:windows": [
+			"@mkl_windows//:mkl_headers",
+			"@mkl_windows//:mkl_libs_windows",
+		],
+		"//conditions:default": [],
+	}),
+)
+
+cc_library(
     name = "mkl_dnn",
     srcs = glob([
         "src/common/*.cpp",
         "src/common/*.hpp",
-        "src/cpu/*.cpp",
-        "src/cpu/*.hpp",
         "src/cpu/**/*.cpp",
         "src/cpu/**/*.hpp",
-        "src/cpu/xbyak/*.h",
+        "src/cpu/**/*.c",
+        "src/cpu/**/*.h",
     ]) + if_mkl_v1_open_source_only([
         ":mkldnn_config_h",
-        "src/cpu/jit_utils/jit_utils.cpp",
-        "src/cpu/jit_utils/jit_utils.hpp",
     ]) + [":mkldnn_version_h"],
     hdrs = glob(["include/*"]),
     copts = [
@@ -84,7 +101,10 @@ cc_library(
         # dependency.
         ":clang_linux_x86_64": [],
         "//conditions:default": [],
-    }),
+    }) + if_mkl_dnn_uses_tf_threading([
+        "-DMKLDNN_THR=MKLDNN_THR_TENSORFLOW",
+        "-fno-openmp",
+    ]),
     includes = [
         "include",
         "src",
@@ -95,21 +115,14 @@ cc_library(
     ],
     nocopts = "-fno-exceptions",
     visibility = ["//visibility:public"],
-    deps = select({
-        "@org_tensorflow//tensorflow:linux_x86_64": [
-            "@mkl_linux//:mkl_headers",
-            "@mkl_linux//:mkl_libs_linux",
+    deps = if_mkl_dnn_uses_tf_threading(
+        [
+            "@eigen_archive//:eigen",
+            "@com_google_protobuf//:protobuf_headers",
+            "@org_tensorflow//tensorflow/core:core_cpu_headers_lib",
+            "@org_tensorflow//tensorflow/core:framework_headers_lib",
         ],
-        "@org_tensorflow//tensorflow:macos": [
-            "@mkl_darwin//:mkl_headers",
-            "@mkl_darwin//:mkl_libs_darwin",
-        ],
-        "@org_tensorflow//tensorflow:windows": [
-            "@mkl_windows//:mkl_headers",
-            "@mkl_windows//:mkl_libs_windows",
-        ],
-        "//conditions:default": [],
-    }),
+        ["mkl_dnn_mkl_deps"])
 )
 
 cc_library(
@@ -117,11 +130,10 @@ cc_library(
     srcs = glob([
         "src/common/*.cpp",
         "src/common/*.hpp",
-        "src/cpu/*.cpp",
-        "src/cpu/*.hpp",
         "src/cpu/**/*.cpp",
         "src/cpu/**/*.hpp",
-        "src/cpu/xbyak/*.h",
+        "src/cpu/**/*.c",
+        "src/cpu/**/*.h",
     ]) + [":mkldnn_version_h"],
     hdrs = glob(["include/*"]),
     copts = [

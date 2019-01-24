@@ -35,6 +35,8 @@ build --define framework_shared_object=true
 # environment variable "TF_MKL_ROOT" every time before build.
 build:mkl --define=build_with_mkl=true --define=enable_mkl=true
 build:mkl --define=tensorflow_mkldnn_contraction_kernel=0
+build:mkl --define build_with_mkl_dnn_only=true
+build:mkl --define mkl_dnn_threading=tf
 build:mkl -c opt
 
 # This config option is used to enable MKL-DNN open source library only,
@@ -43,6 +45,7 @@ build:mkl_open_source_only --define=build_with_mkl_dnn_only=true
 build:mkl_open_source_only --define=build_with_mkl_dnn_v1_only=true
 build:mkl_open_source_only --define=build_with_mkl=true --define=enable_mkl=true
 build:mkl_open_source_only --define=tensorflow_mkldnn_contraction_kernel=0
+build:mkl_open_source_only --define mkl_dnn_threading=tf
 
 build:download_clang --crosstool_top=@local_config_download_clang//:toolchain
 build:download_clang --define=using_clang=true

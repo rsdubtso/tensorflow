@@ -19,3 +19,12 @@ config_setting(
     },
     visibility = ["//visibility:public"],
 )
+
+config_setting(
+    name = "mkl_dnn_use_tf_threading",
+    define_values = {
+        "mkl_dnn_threading" : "tf",
+        "build_with_mkl_dnn_only": "true",
+    },
+    visibility = ["//visibility:public"],
+)
