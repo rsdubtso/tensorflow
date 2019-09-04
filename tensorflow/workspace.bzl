@@ -126,11 +126,11 @@ def tf_workspace(path_prefix = "", tf_repo_name = ""):
     tf_http_archive(
         name = "mkl_dnn",
         build_file = clean_dep("//third_party/mkl_dnn:mkldnn.BUILD"),
-        sha256 = "38a1c02104ee9f630c1ad68164119cd58ad0aaf59e04ccbe7bd5781add7bfbea",
-        strip_prefix = "mkl-dnn-0.18",
+        sha256 = "f585815a79b545a2777373710773d047e85399642387d6cd8805bc6091c4d8be",
+        strip_prefix = "mkl-dnn-rls-v0.18",
         urls = [
-            "http://mirror.tensorflow.org/github.com/intel/mkl-dnn/archive/v0.18.tar.gz",
-            "https://github.com/intel/mkl-dnn/archive/v0.18.tar.gz",
+            "http://mirror.tensorflow.org/github.com/rsdubtso/mkl-dnn/archive/rls-v0.18.tar.gz",
+            "https://github.com/rsdubtso/mkl-dnn/archive/rls-v0.18.tar.gz",
         ],
     )
 
